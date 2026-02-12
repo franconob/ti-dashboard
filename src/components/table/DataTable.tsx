@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 import type { Indicator } from '../../types/indicator';
-import type { SortField, SortDirection } from '../../context/DashboardContext';
+import type { SortField, SortDirection } from '../../context/dashboardReducer';
 import { useDashboardState, useDashboardDispatch } from '../../hooks/useDashboard';
 import { useIndicators } from '../../hooks/useIndicators';
 import { SeverityBadge } from '../shared/SeverityBadge';
 import { ConfidenceBar } from '../shared/ConfidenceBar';
 import { Tag } from '../shared/Tag';
 import { timeAgo } from '../../utils/formatting';
+import { ErrorState } from '../shared/ErrorState';
 import { cn } from '../../utils/cn';
 import styles from './DataTable.module.css';
 
@@ -111,7 +112,7 @@ function EmptyState() {
 export function DataTable() {
   useIndicators();
 
-  const { indicators, loading, sortField, sortDirection, selectedId } = useDashboardState();
+  const { indicators, loading, error, sortField, sortDirection, selectedId } = useDashboardState();
   const dispatch = useDashboardDispatch();
 
   const sorted = useMemo(
@@ -123,8 +124,19 @@ export function DataTable() {
     dispatch({ type: 'SELECT_INDICATOR', payload: selectedId === id ? null : id });
   };
 
+  if (error) {
+    return (
+      <div className={styles.wrapper}>
+        <ErrorState message={error} />
+      </div>
+    );
+  }
+
+  const showSkeleton = loading && sorted.length === 0;
+  const showStale = loading && sorted.length > 0;
+
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} style={showStale ? { opacity: 0.6, transition: 'opacity 0.2s ease' } : undefined}>
       <table className={styles.table}>
         <thead>
           <tr>
@@ -138,9 +150,9 @@ export function DataTable() {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {showSkeleton ? (
             <TableSkeleton />
-          ) : sorted.length === 0 ? (
+          ) : !loading && sorted.length === 0 ? (
             <EmptyState />
           ) : (
             sorted.map((indicator) => (

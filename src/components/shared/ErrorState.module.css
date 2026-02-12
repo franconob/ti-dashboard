@@ -1,0 +1,50 @@
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-16) var(--sp-8);
+  text-align: center;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  color: var(--severity-critical);
+  margin-bottom: var(--sp-4);
+  opacity: 0.6;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--sp-1);
+}
+
+.message {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-bottom: var(--sp-5);
+  max-width: 360px;
+}
+
+.retryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: var(--augur-blue);
+  color: white;
+  border: 1px solid var(--augur-blue);
+}
+
+.retryBtn:hover {
+  filter: brightness(1.1);
+}
