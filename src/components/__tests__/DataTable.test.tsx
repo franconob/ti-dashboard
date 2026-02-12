@@ -88,7 +88,7 @@ describe('DataTable', () => {
     renderTable();
     // All sortable headers should have sort indicators
     const headers = screen.getAllByRole('columnheader');
-    // 7 columns total, 6 sortable + 1 Tags
-    expect(headers).toHaveLength(7);
+    // 8 columns: checkbox + 6 sortable + Tags
+    expect(headers).toHaveLength(8);
   });
 });

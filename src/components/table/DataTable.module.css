@@ -1,6 +1,8 @@
 .wrapper {
   padding: var(--sp-4) var(--sp-8) var(--sp-6);
   flex: 1;
+  min-width: 0;
+  overflow-x: auto;
 }
 
 .table {
@@ -9,6 +11,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  table-layout: fixed;
 }
 
 /* Header */
@@ -37,6 +40,22 @@
 
 .th:hover {
   color: var(--text-secondary);
+}
+
+.thCheckbox {
+  width: 28px;
+  cursor: default;
+}
+
+.tdCheckbox {
+  width: 28px;
+}
+
+.checkbox {
+  accent-color: var(--augur-blue);
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
 }
 
 .sortIcon {
@@ -76,7 +95,6 @@
   font-size: 12.5px;
   font-weight: 500;
   color: var(--augur-blue);
-  max-width: 260px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -141,7 +159,12 @@
 
 /* Skeleton */
 .skeleton {
-  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-card) 50%, var(--bg-elevated) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 25%,
+    var(--bg-card) 50%,
+    var(--bg-elevated) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-sm);
@@ -153,6 +176,10 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }

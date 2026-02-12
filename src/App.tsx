@@ -6,6 +6,7 @@ import { Toolbar } from './components/toolbar/Toolbar';
 import { DataTable } from './components/table/DataTable';
 import { Pagination } from './components/pagination/Pagination';
 import { DetailPanel } from './components/detail/DetailPanel';
+import { ContentArea } from './components/layout/ContentArea';
 
 function App() {
   return (
@@ -14,9 +15,11 @@ function App() {
         <PageHeader />
         <StatsRow />
         <Toolbar />
-        <DataTable />
-        <Pagination />
-        <DetailPanel />
+        <ContentArea>
+          <DataTable />
+          <Pagination />
+          <DetailPanel />
+        </ContentArea>
       </DashboardLayout>
     </DashboardProvider>
   );

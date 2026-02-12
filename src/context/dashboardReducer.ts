@@ -1,31 +1,24 @@
 import type { Indicator, IndicatorType, Severity } from '../types/indicator';
 
-/* ─── Sort ─── */
 export type SortField = 'value' | 'type' | 'severity' | 'confidence' | 'source' | 'lastSeen';
 export type SortDirection = 'asc' | 'desc';
 
-/* ─── State ─── */
 export interface DashboardState {
-  /* Filters */
   search: string;
   severity: Severity | '';
   type: IndicatorType | '';
   source: string;
 
-  /* Pagination */
   page: number;
   totalPages: number;
   total: number;
 
-  /* Sort (client-side) */
   sortField: SortField;
   sortDirection: SortDirection;
 
-  /* Selection */
   selectedId: string | null;
   selectedIndicator: Indicator | null;
 
-  /* Data */
   indicators: Indicator[];
   loading: boolean;
   error: string | null;
@@ -52,7 +45,6 @@ export const initialState: DashboardState = {
   error: null,
 };
 
-/* ─── Actions ─── */
 export type DashboardAction =
   | { type: 'SET_SEARCH'; payload: string }
   | { type: 'SET_SEVERITY'; payload: Severity | '' }
@@ -67,7 +59,6 @@ export type DashboardAction =
   | { type: 'SET_SELECTED_DETAIL'; payload: Indicator | null }
   | { type: 'CLEAR_FILTERS' };
 
-/* ─── Reducer ─── */
 export function dashboardReducer(state: DashboardState, action: DashboardAction): DashboardState {
   switch (action.type) {
     case 'SET_SEARCH':

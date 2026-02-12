@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import type { Indicator } from '../../types/indicator';
 import type { SortField, SortDirection } from '../../context/dashboardReducer';
 import { useDashboardState, useDashboardDispatch } from '../../hooks/useDashboard';
@@ -31,6 +31,8 @@ const SEVERITY_ORDER: Record<string, number> = {
   medium: 2,
   low: 1,
 };
+
+const COL_COUNT = 8;
 
 function sortIndicators(data: Indicator[], field: SortField, direction: SortDirection): Indicator[] {
   return [...data].sort((a, b) => {
@@ -79,6 +81,7 @@ function TableSkeleton() {
     <>
       {Array.from({ length: 8 }).map((_, i) => (
         <tr key={i} className={styles.skeletonRow}>
+          <td className={styles.td}><div className={styles.skeleton} style={{ width: '14px', height: '14px' }} /></td>
           <td className={styles.td}><div className={styles.skeleton} style={{ width: '180px' }} /></td>
           <td className={styles.td}><div className={styles.skeleton} style={{ width: '50px' }} /></td>
           <td className={styles.td}><div className={styles.skeleton} style={{ width: '60px' }} /></td>
@@ -95,7 +98,7 @@ function TableSkeleton() {
 function EmptyState() {
   return (
     <tr>
-      <td colSpan={7}>
+      <td colSpan={COL_COUNT}>
         <div className={styles.emptyState}>
           <svg className={styles.emptyIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <circle cx="11" cy="11" r="8" />
@@ -114,11 +117,36 @@ export function DataTable() {
 
   const { indicators, loading, error, sortField, sortDirection, selectedId } = useDashboardState();
   const dispatch = useDashboardDispatch();
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
 
   const sorted = useMemo(
     () => sortIndicators(indicators, sortField, sortDirection),
     [indicators, sortField, sortDirection],
   );
+
+  const allChecked = sorted.length > 0 && sorted.every((i) => checkedIds.has(i.id));
+  const someChecked = sorted.some((i) => checkedIds.has(i.id));
+
+  const handleSelectAll = useCallback(() => {
+    if (allChecked) {
+      setCheckedIds(new Set());
+    } else {
+      setCheckedIds(new Set(sorted.map((i) => i.id)));
+    }
+  }, [allChecked, sorted]);
+
+  const handleToggleCheck = useCallback((id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCheckedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
 
   const handleRowClick = (id: string) => {
     dispatch({ type: 'SELECT_INDICATOR', payload: selectedId === id ? null : id });
@@ -140,6 +168,16 @@ export function DataTable() {
       <table className={styles.table}>
         <thead>
           <tr>
+            <th className={cn(styles.th, styles.thCheckbox)}>
+              <input
+                type="checkbox"
+                className={styles.checkbox}
+                checked={allChecked}
+                ref={(el) => { if (el) el.indeterminate = someChecked && !allChecked; }}
+                onChange={handleSelectAll}
+                aria-label="Select all indicators"
+              />
+            </th>
             <SortHeader field="value" label="Indicator" />
             <SortHeader field="type" label="Type" />
             <SortHeader field="severity" label="Severity" />
@@ -161,6 +199,15 @@ export function DataTable() {
                 className={cn(styles.row, selectedId === indicator.id && styles.rowSelected)}
                 onClick={() => handleRowClick(indicator.id)}
               >
+                <td className={cn(styles.td, styles.tdCheckbox)} onClick={(e) => handleToggleCheck(indicator.id, e)}>
+                  <input
+                    type="checkbox"
+                    className={styles.checkbox}
+                    checked={checkedIds.has(indicator.id)}
+                    readOnly
+                    aria-label={`Select ${indicator.value}`}
+                  />
+                </td>
                 <td className={cn(styles.td, styles.indicator)}>{indicator.value}</td>
                 <td className={styles.td}>
                   <span className={styles.typeCell}>
